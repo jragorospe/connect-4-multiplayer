@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+</head>
+<style>
+.parent {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    grid-column-gap: 20px;
+    grid-row-gap: 20px;
+    height: 100vh;
+    padding-top: 20px;
+    text-align: center;
+}
+h1 {
+  text-align: center;
+}
+
+.div1, .div2, .div3, .div4{
+  display: grid;
+  align-self: stretch;
+  align-items: center;
+  width: 100%;
+  border-radius: 20px;
+  border: 2px solid black;
+}
+
+.div1 { grid-area: 3 / 3 / 5 / 7; }
+.div2 { grid-area: 5 / 2 / 8 / 4; }
+.div3 { grid-area: 5 / 4 / 8 / 6; }
+.div4 { grid-area: 5 / 6 / 8 / 8; }
+.div5 { grid-area: 8 / 3 / 9 / 7; }
+.div6 { grid-area: 2 / 4 / 3 / 6; }
+
+.colorWrapper {
+    padding-top: 0px;
+}
+.colors {
+    padding-top: 10px;
+}
+.colors button {
+    width: 136px;
+    height: 35px;
+    border-radius: 15px;
+    border-color: transparent;
+    text-align: center;
+    color: white;
+}
+.colors button:focus {
+    outline: 0;
+}
+.colors button::-moz-focus-inner {
+    border: 0;
+}
+.colors #color1  {
+    background-color: rgb(0, 0, 255);
+}
+.colors #color1 .circ-left {
+    background-color: rgb(223, 0, 0);
+}
+.colors #color1 .circ-right {
+    background-color: rgb(226, 226, 0);
+}
+.colors #color2  {
+    background-color: rgb(24, 24, 24);
+}
+.colors #color2 .circ-left {
+    background-color: rgb(119, 119, 119);
+}
+.colors #color2 .circ-right {
+    background-color: rgb(250, 228, 176);
+}
+.colors #color3  {
+    background-color: rgb(53, 185, 0);
+}
+.colors #color3 .circ-left {
+    background-color: rgb(0, 255, 255);
+}
+.colors #color3 .circ-right {
+    background-color: rgb(175, 0, 175);
+}
+.colors #color4  {
+    background-color: rgb(118, 12, 16);
+}
+.colors #color4 .circ-left {
+    background-color: rgb(254, 193, 84);
+}
+.colors #color4 .circ-right {
+    background-color: rgb(218, 31, 40);
+}
+.circle {
+	display: inline-block;
+	width: 13px;
+	height: 13px;
+	border-radius: 50%;
+	margin: 0 10px;
+}
+
+#current-player {
+  text-align: center;
+}
+
+</style>
+<body>
+<div class="parent">
+    <div class="div1">
+      <div class="box">
+      We created a name for you: <br><br>
+      <input id="current-player" maxlength="40"><br><br>
+      Click to change your name.
+      </div>
+    </div>
+    <div class="div2">
+      <div class="box">
+      Join an existing game. <br><br>
+      <input id="friend-code" maxlength="40"><br><br>
+      Your friend will provide you with their code.
+      </div>
+    </div>
+    <div class="div3">
+      <div class="box">
+      Create a new private game.<br><br>
+      <button type="button" id="new-game">New Game</button><br><br>
+      You will be given a code to share with your opponent. <br><br>
+      </div>
+    </div>
+    <div class="div4">
+      <div class="box">
+      Join an random game.<br><br>
+      <button type="button" id="random">Random</button>
+      </div>
+    </div>
+    <div class="div6"><h1>CONNECT-4</h1> </div>
+</div>
+<script>
+  function randomUsername() {
+	let parts = [];
+    parts.push( ["Small", "Medium", "Large", "Tiny", "Giant"] );
+    parts.push( ["Red", "Orange", "Yellow", "Green", "Blue"] );
+    parts.push( ["Dog", "Cat", "Turtle", "Hamster", "Bird"] );
+
+    username = "";
+    for( part of parts) {
+        username += part[Math.floor(Math.random()*part.length)];
+    }
+        return username;
+}
+
+  const getCookie = (name) => {
+    console.log('get cookie called');
+    return document.cookie.split('; ').reduce((r, v) => {
+      const parts = v.split('=');
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r
+    }, '')
+  }
+
+  document.getElementById("current-player").placeholder = getCookie('username');
+</script>
+</body>
+</html>

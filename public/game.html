@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Connect Four</title>
+  <script src='/socket.io/socket.io.js'></script>
+</head>
+<body>
+  <section class="wrapper">
+    <div class="center">
+      <div id="top-text" class="top-text">
+        <h3 class="primary">
+          <span id="prefix">Current Player is: </span>
+          <span id="current-player" contenteditable="true">Player 1</span>
+        </h3>
+        <h3 class="secondary">
+          <span>Next up is: </span>
+          <span id="other-player" contenteditable="true">Player 2</span>
+        </h3>
+      <div id="play-again" class="play-again">
+        <a href="#" class="play-again-btn" id="play-again-btn">Play Again</a>
+      </div>
+    </div>
+    <table id="board" class="board">
+      <tbody>
+        <tr>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+          <td><button type="button"></button></td>
+        </tr>
+      </tbody>
+    </table>
+    <form action='/username' method='post'>
+      <label for='username'>Enter your username:</label>
+      <input type='text' id='uname' name='username'><br><br>
+      <input type='submit' value='Submit'>
+    </form>
+  </section>
+<script>
+  function ready() {
+    username = getCookie('username');
+    if (username === "") {
+      username = randomUsername();
+    }
+  }
+
+  const getCookie = (name) => {
+    console.log('get cookie called');
+    return document.cookie.split('; ').reduce((r, v) => {
+      const parts = v.split('=');
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r
+    }, '')
+  }
+
+  function randomUsername() {
+    let parts = [];
+      parts.push( ["Small", "Medium", "Large", "Tiny", "Giant"] );
+      parts.push( ["Red", "Orange", "Yellow", "Green", "Blue"] );
+      parts.push( ["Dog", "Cat", "Turtle", "Hamster", "Bird"] );
+
+      username = "";
+      for( part of parts) {
+          username += part[Math.floor(Math.random()*part.length)];
+      }
+          return username;
+  }
+
+  let socket = io();
+
+  document.querySelector("#current-player").textContent = getCookie('username');
+
+  socket.emit('join', {
+    roomId: window.location.href.split('room/')[1],
+    username: getCookie('username')
+  });
+
+  socket.on('place-tile', (pos) => {
+    console.log(`Received place-tile for pos: ${pos}`);
+    Game.do.addDiscToBoard(pos.x, pos.y);
+    Game.do.printBoard();
+    Game.do.changePlayer();
+  });
+
+  socket.on('joined', (username) => {
+    console.log(`User: ${username} joined`);
+    document.querySelector("#other-player").textContent = username;
+  });
+
+  socket.on('help', () => {
+    helpButton.textContent = 'its a miracle';
+  });
+
+</script>
+  <script src="/vars.js"></script>
+  <script src="/functions.js"></script>
+  <script src="/main.js"></script>
+</body>
+</html>
+<style>
+body {
+  font-family: 'Nunito', 'Helvetica Neue', sans-serif;
+  padding: 0.1px; /* prevent margin overflow */
+  margin: 0;
+}
+
+.title {
+  font-size: 2rem;
+}
+
+.wrapper {
+  margin: 50px auto 0;
+  width: 450px;
+}
+
+.board {
+  background: blue;
+  padding: 20px;
+}
+
+.board button {
+  display: block;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 0;
+  margin: 1px;
+  background: white;
+}
+.board button:hover {
+  filter: brightness(75%);
+}
+/* no focus rings by default... focus borders get added via js */
+.board button:focus {
+  outline: 0;
+}
+.board button::-moz-focus-inner {
+  border: 0;
+}
+.board button.red {
+  background: red;
+}
+.board button.yellow {
+  background: yellow;
+}
+
+.play-again {
+  height: 0px;
+  overflow: hidden;
+}
+.play-again.show {
+  height: 40px;
+  transition: 0.75s;
+}
+
+.play-again-btn {
+  display: inline-block;
+  margin-bottom: 2em;
+  height: 40px;
+  line-height: 40px;
+  width: 50%;
+  background: mediumseagreen;
+  color: white;
+  text-decoration: none;
+  opacity: 0.9;
+}
+.play-again-btn:hover,
+.play-again-btn:focus {
+  background: #359660;
+}
+.play-again:hover {
+  opacity: 1;
+}
+
+.top-text {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.primary {
+  color: black;
+  margin: 0 0 0.75rem;
+  font-weight: normal;
+}
+.primary .red,
+.primary .yellow {
+  position: relative;
+}
+.primary .red::after,
+.primary .yellow::after {
+  display: block;
+  width: 16px;
+  height: 16px;
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 8px;
+  border-radius: 50%;
+}
+.primary [contenteditable="true"] {
+  border-bottom: 1px solid black;
+}
+
+.secondary {
+  color: #bbb;
+  margin: 0;
+  font-weight: normal;
+}
+.secondary [contenteditable="true"] {
+  border-bottom: 1px solid #bbb;
+}
+
+.center {
+  text-align: center;
+}
+
+</style>
